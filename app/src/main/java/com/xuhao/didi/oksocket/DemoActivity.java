@@ -179,14 +179,14 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    mServerBtn.setText(mPort + "服务器关闭(Local Server Demo in " + mPort + " Stop)");
+                    mServerBtn.setText(mPort + "服务器关闭(Local Server Demo in " + mPort + " Stop)\n启动后会自动发送000111消息");
                 }
             });
         } else {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    mServerBtn.setText(mPort + "服务器启动(Local Server Demo in " + mPort + " Start)");
+                    mServerBtn.setText(mPort + "服务器启动(Local Server Demo in " + mPort + " Start)\n启动后会自动发送000111消息");
                 }
             });
         }
