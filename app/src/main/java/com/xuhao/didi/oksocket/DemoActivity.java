@@ -5,6 +5,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.LinkAddress;
+import android.net.LinkProperties;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -261,6 +264,21 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
                 if (ipAddress == 0) return "未连接wifi";
                 return ((ipAddress & 0xff) + "." + (ipAddress >> 8 & 0xff) + "."
                         + (ipAddress >> 16 & 0xff) + "." + (ipAddress >> 24 & 0xff));
+            } else if (info.getType() == ConnectivityManager.TYPE_ETHERNET) { //有线
+                ConnectivityManager mConnectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                Network network = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    network = mConnectivityManager.getActiveNetwork();
+                    LinkProperties linkProperties = mConnectivityManager.getLinkProperties(network);
+                    if (linkProperties != null && linkProperties.getLinkAddresses().size() > 0){
+                        for (LinkAddress address: linkProperties.getLinkAddresses()) {
+                            InetAddress ads = address.getAddress();
+                            if (ads instanceof Inet4Address) {
+                                return ads.getHostAddress();
+                            }
+                        }
+                    }
+                }
             }
         } else {
             //当前无网络连接,请在设置中打开网络
