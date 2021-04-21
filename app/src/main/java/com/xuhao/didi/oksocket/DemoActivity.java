@@ -149,13 +149,13 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
         });
 
         myThread = new MyThread();
+        myThread.start();
         mServerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!mServerManager.isLive()) {
                     mServerManager.listen();
                     threadRunFlag = true;
-                    myThread.start();
                 } else {
                     mServerManager.shutdown();
                     threadRunFlag = false;
@@ -272,13 +272,13 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
     private class MyThread extends Thread{
         @Override
         public void run() {
-            while(threadRunFlag){
+            while(true){
                 IClientPool<String, IClient> clients = mServerManager.getClientPool();
-                if (clients != null && clients.size() > 0){
+                if (clients != null && clients.size() > 0 && threadRunFlag){
                     clients.sendToAll(new MsgDataBean("000111"));
                 }
                 try {
-                    sleep(1000);
+                    sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
