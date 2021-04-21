@@ -63,6 +63,9 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
 
     private int mPort = 8080;
 
+    private boolean threadRunFlag = true;
+    private MyThread myThread = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +93,7 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
             public void onClick(View v) {
                 Intent intent = new Intent(DemoActivity.this, ComplexDemoActivity.class);
                 startActivity(intent);
+
             }
         });
 
@@ -144,13 +148,17 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
             }
         });
 
+        myThread = new MyThread();
         mServerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!mServerManager.isLive()) {
                     mServerManager.listen();
+                    threadRunFlag = true;
+                    myThread.start();
                 } else {
                     mServerManager.shutdown();
+                    threadRunFlag = false;
                 }
             }
         });
@@ -261,4 +269,20 @@ public class DemoActivity extends AppCompatActivity implements IClientIOCallback
         return "IP获取失败";
     }
 
+    private class MyThread extends Thread{
+        @Override
+        public void run() {
+            while(threadRunFlag){
+                IClientPool<String, IClient> clients = mServerManager.getClientPool();
+                if (clients != null && clients.size() > 0){
+                    clients.sendToAll(new MsgDataBean("000111"));
+                }
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
